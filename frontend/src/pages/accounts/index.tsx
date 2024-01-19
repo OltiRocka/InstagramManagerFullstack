@@ -1,8 +1,9 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import React from "react";
+import styles from "./accounts.module.css";
+import "../../app/globals.css";
 import NavBar from "@/components/navBar";
 
-export default function Home() {
+export default function Accounts() {
   return (
     <main className={styles.main}>
       <NavBar></NavBar>

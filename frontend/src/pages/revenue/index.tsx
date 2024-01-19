@@ -1,8 +1,8 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import React from "react";
+import styles from "./revenue.module.css";
 import NavBar from "@/components/navBar";
-
-export default function Home() {
+import "../../app/globals.css";
+export default function Revenue() {
   return (
     <main className={styles.main}>
       <NavBar></NavBar>

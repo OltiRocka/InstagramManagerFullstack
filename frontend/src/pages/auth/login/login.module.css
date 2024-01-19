@@ -1,0 +1,8 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+}
+.secondCont {
+  display: flex;
+  min-height: 100vh;
+}
