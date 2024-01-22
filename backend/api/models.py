@@ -20,15 +20,16 @@ class Content(models.Model):
     CONTENT_TYPES = (
         ("image", "Image"),
         ("video", "Video"),
-        ("carousel", "Carousel"),
     )
-
+    id = models.CharField(max_length=40, primary_key=True)
     type = models.CharField(max_length=10, choices=CONTENT_TYPES)
+    display_url = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
     description = models.TextField()
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     comments = models.IntegerField(default=0)
+    carousel = models.BooleanField(default=False)
     owner = models.ForeignKey(
         InstagramUser, on_delete=models.CASCADE, related_name="user_content"
     )
