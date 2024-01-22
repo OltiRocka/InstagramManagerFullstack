@@ -10,15 +10,17 @@ import GraphIcon from "@/assets/icons/GraphIcon.svg";
 import HomeIcon from "@/assets/icons/HomeIcon.svg";
 import LogIcon from "@/assets/icons/LogIcon.svg";
 import SearchIcon from "@/assets/icons/SearchIcon.svg";
-import profilePic from "@/assets/images/profile.png";
 import useHover from "@/hooks/useHover";
 import { logoutUser } from "@/stores/auth";
 import Switch from "./Switch";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/stores/store";
+
 const NavBar = () => {
   const { hovered, eventHandlers } = useHover();
   const router = useRouter();
-
+  const user = useUserStore.getState().user;
+  console.log(user);
   const handleLogout = async () => {
     console.log("logout");
     try {
@@ -33,7 +35,7 @@ const NavBar = () => {
       <div className={styles.top_container}>
         <Link className={styles.header_container} href={"/profile"}>
           <Image
-            src={profilePic}
+            src={user.profile_image}
             width={90}
             height={90}
             alt="ProfileImage"
@@ -41,8 +43,10 @@ const NavBar = () => {
           />
           {hovered ? (
             <div className={styles.personalInfo}>
-              <h3>Olti Roka</h3>
-              <p>olti@roka.dev</p>
+              <h3>
+                {user.first_name} {user.last_name}
+              </h3>
+              <p>{user.email}</p>
             </div>
           ) : (
             []

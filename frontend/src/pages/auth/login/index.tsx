@@ -2,28 +2,37 @@ import React from "react";
 import styles from "./login.module.css";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import { loginUser } from "@/stores/auth";
-import "../../app/globals.css";
 import { useRouter } from "next/navigation";
+import GoogleIcon from "@/assets/images/GoogleIcon.png";
+import "../../../app/globals.css";
+import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
+import { useUserStore } from "@/stores/store";
 export default function Loginform() {
   const router = useRouter();
   const handleSubmit = async (
     values: {
-      username: string;
+      email: string;
       password: string;
     },
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
     try {
       const loginData = {
-        username: values.username,
+        email: values.email,
         password: values.password,
       };
 
       const result = await loginUser(loginData);
 
+      useUserStore.getState().updateUser({
+        first_name: result.data.first_name,
+        last_name: result.data.last_name,
+        email: result.data.email,
+        profile_image: `${process.env.NEXT_PUBLIC_API_URL}${result.data.profile_image}`,
+      });
       if (result && result.success) {
         toast.success("Login successful");
         router.push("/");
@@ -57,58 +66,60 @@ export default function Loginform() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.secondCont}>
-        <Formik
-          initialValues={{
-            username: "",
-            password: "",
-          }}
-          onSubmit={handleSubmit}
-        >
-          <Form className={styles.login_form}>
-            <p className={styles.login_maintext}>Sign in</p>
-            <div className={styles.passCont}>
-              <label className={styles.login_label}>Username</label>
-              <div className={styles.inputWithIcon}>
-                <Field
-                  type="text"
-                  name="username"
-                  autoComplete="on"
-                  placeholder="Email Address"
-                  className={styles.login_input}
-                />
-              </div>
-              <div className={styles.errorMessage}>
-                <ErrorMessage name="username" component="div" />
-              </div>
-            </div>
+      <Formik
+        initialValues={{
+          email: "",
+          password: "",
+        }}
+        onSubmit={handleSubmit}
+      >
+        <Form className={styles.login_form}>
+          <div className={styles.header}>
+            <h2 className={styles.login_maintext}>Login to your Account</h2>
+            <p className={styles.login_maindesc}>
+              See what is going on with your Socials
+            </p>
+          </div>
+          <button className={styles.google}>
+            <Image src={GoogleIcon} alt="GoogleIcon" /> Continue with Google
+          </button>
+          <p className={styles.seporator}>or Sign In with Email</p>
+          <div className={styles.input_container}>
+            <label className={styles.input_label}>Email</label>
+            <Field
+              type="email"
+              name="email"
+              autoComplete="on"
+              placeholder="mail@example.com"
+              className={styles.input}
+            />
+          </div>
 
-            <div className={styles.passCont}>
-              <label className={styles.login_label}>Password:</label>
-              <div className={styles.inputWithIcon}>
-                <Field
-                  name="password"
-                  autoComplete="current-password"
-                  id="current-password"
-                  placeholder="Password"
-                  className={styles.login_input}
-                  type="password"
-                />
-              </div>
-              <div className={styles.errorMessage}>
-                <ErrorMessage name="password" component="div" />
-              </div>
-            </div>
-            <div className={styles.login_text}>
-              <Link href="/auth/signup">Create Account</Link>
-            </div>
+          <div className={styles.input_container}>
+            <label className={styles.input_label}>Password</label>
+            <Field
+              name="password"
+              autoComplete="current-password"
+              id="current-password"
+              placeholder="*****************"
+              className={styles.input}
+              type="password"
+            />
+          </div>
+          <div className={styles.link_container}>
+            <Link href="/auth/signup" className={styles.link}>
+              Create Account
+            </Link>{" "}
+            <Link href="/auth/forgotPassword" className={styles.link}>
+              Forgot Password?
+            </Link>
+          </div>
 
-            <button type="submit" className={styles.login_button}>
-              Sign In
-            </button>
-          </Form>
-        </Formik>
-      </div>
+          <button type="submit" className={styles.login_button}>
+            Sign In
+          </button>
+        </Form>
+      </Formik>
       <ToastContainer position="top-center" />
     </div>
   );

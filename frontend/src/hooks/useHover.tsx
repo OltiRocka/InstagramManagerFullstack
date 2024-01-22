@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useCallback } from "react";
 
 type UseHoverReturnType = {
   hovered: boolean;
@@ -9,20 +9,14 @@ type UseHoverReturnType = {
 };
 
 const useHover = (): UseHoverReturnType => {
-  const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered] = useState<boolean>(false);
 
-  const eventHandlers = useMemo(
-    () => ({
-      onMouseOver() {
-        setHovered(true);
-      },
-      onMouseOut() {
-        setHovered(false);
-      },
-    }),
-    []
-  );
+  const onMouseOver = useCallback(() => setHovered(true), []);
+  const onMouseOut = useCallback(() => setHovered(false), []);
+
+  const eventHandlers = { onMouseOver, onMouseOut };
 
   return { hovered, eventHandlers };
 };
+
 export default useHover;

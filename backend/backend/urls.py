@@ -17,16 +17,26 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from api import views
+from api import views as api_views
+from authentication import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
-router = routers.DefaultRouter()
-router.register(r"users", views.InstagramUserView, "user")
-router.register(r"content", views.ContentView, "content")
+api = routers.DefaultRouter()
+api.register(r"users", api_views.InstagramUserView, "user")
+api.register(r"content", api_views.ContentView, "content")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
-    path("signup/", views.signup, name="signup"),
-    path("login/", views.login, name="login"),
-    path("logout/", views.logout, name="logout"),
+    path("api/", include(api.urls)),
+    path("auth/signup/", auth_views.SignupView.as_view(), name="signup"),
+    path("auth/login/", auth_views.LoginView.as_view(), name="login"),
+    path("auth/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("auth/profile/", auth_views.AccountView.as_view(), name="profile"),
+    path(
+        "insta/username/",
+        api_views.InstagramDataView.as_view(),
+        name="content_username",
+    ),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
