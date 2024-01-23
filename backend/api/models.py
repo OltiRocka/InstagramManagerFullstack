@@ -11,15 +11,15 @@ class InstagramUser(models.Model):
     followers = models.IntegerField(default=0)
     categories = models.TextField()
     following = models.IntegerField(default=0)
-    profile_image = models.CharField(max_length=255)
+    profile_image = models.ImageField(upload_to="media/images/")
     num_content = models.IntegerField(default=0)
 
     def set_list_field(self, data):
-        self.list_field = json.dumps(data)
+        self.categories = json.dumps(data)
 
     def get_list_field(self):
-        if self.list_field:
-            return json.loads(self.list_field)
+        if self.categories:
+            return json.loads(self.categories)
         return []
 
     def __str__(self):

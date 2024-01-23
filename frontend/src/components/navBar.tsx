@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./navBar.module.css";
 import Image from "next/image";
 import BellIcon from "@/assets/icons/BellIcon.svg";
@@ -14,13 +14,23 @@ import useHover from "@/hooks/useHover";
 import { logoutUser } from "@/stores/auth";
 import Switch from "./Switch";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/store";
 
 const NavBar = () => {
   const { hovered, eventHandlers } = useHover();
+  const [user, setUser] = useState({
+    first_name: "John",
+    last_name: "Doe",
+    email: "john@doe.com",
+    profile_image: `${process.env.NEXT_PUBLIC_API_URL}/media/profile_image/default.png`,
+  });
+  useEffect(() => {
+    const userDataString = window.localStorage.getItem("userData");
+    if (userDataString !== null) {
+      setUser(JSON.parse(userDataString));
+    }
+  }, []);
+
   const router = useRouter();
-  const user = useUserStore.getState().user;
-  console.log(user);
   const handleLogout = async () => {
     console.log("logout");
     try {
@@ -123,9 +133,6 @@ const NavBar = () => {
           >
             Logout
           </p>
-        </div>
-        <div className={styles.night_mode}>
-          <Switch />
         </div>
       </div>
     </div>

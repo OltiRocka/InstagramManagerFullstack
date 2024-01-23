@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Mynerve&family=Poppins:wght@700&display=swap");
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tr {
+  height: 30px;
+  border-bottom: 1px solid #ccc;
+}
+
+.th {
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+.th:first-child {
+  text-align: center;
+}
+.th:nth-child(2) {
+  display: none;
+}
+.tr td:nth-child(2) {
+  display: none;
+}
+.tr td {
+  padding: 0 15px;
+  max-width: 200px;
+  min-width: 150px;
+  text-align: left;
+  height: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tr:hover {
+  background-color: #eee;
+}
+.tr td:last-child {
+  min-width: 0px;
+  width: 1-0px;
+  white-space: nowrap;
+}
+
+.tr td:first-child {
+  min-width: 0px;
+  width: 1%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tr td:nth-last-child(2) {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.image {
+  border-radius: 30px;
+  padding: 10px;
+  max-width: 100px;
+  max-height: 100px;
+}
+.checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.tfoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 100px;
+  align-items: center;
+  padding: 20px;
+}
+
+.buttons {
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.delete {
+  font-size: 32px;
+  color: red;
+  cursor: pointer;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.pagination select {
+  width: 60px;
+  height: 30px;
+  font-size: 18px;
+  padding: 0px 0px 0px 5px;
+  background-color: white;
+  border: 2px #ccc solid;
+  border-radius: 5px;
+}

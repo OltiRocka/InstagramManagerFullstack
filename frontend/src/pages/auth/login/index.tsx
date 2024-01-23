@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./login.module.css";
 import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
@@ -9,9 +9,14 @@ import GoogleIcon from "@/assets/images/GoogleIcon.png";
 import "../../../app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
-import { useUserStore } from "@/stores/store";
 export default function Loginform() {
   const router = useRouter();
+  const [user, setUser] = useState({
+    first_name: "John",
+    last_name: "Doe",
+    email: "john@doe.com",
+    profile_image: `${process.env.NEXT_PUBLIC_BACKEND_URL}/media/profile_image/default.png`,
+  });
   const handleSubmit = async (
     values: {
       email: string;
@@ -27,12 +32,15 @@ export default function Loginform() {
 
       const result = await loginUser(loginData);
 
-      useUserStore.getState().updateUser({
-        first_name: result.data.first_name,
-        last_name: result.data.last_name,
-        email: result.data.email,
-        profile_image: `${process.env.NEXT_PUBLIC_API_URL}${result.data.profile_image}`,
-      });
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          first_name: result.data.first_name,
+          last_name: result.data.last_name,
+          email: result.data.email,
+          profile_image: `${process.env.NEXT_PUBLIC_API_URL}${result.data.profile_image}`,
+        })
+      );
       if (result && result.success) {
         toast.success("Login successful");
         router.push("/");

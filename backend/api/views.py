@@ -7,8 +7,9 @@ from .serializers import (
 from .models import InstagramUser, Content
 from rest_framework.response import Response
 from utils.request import Session
-
-
+import requests
+from django.core.files import File
+from io import BytesIO
 class InstagramUserView(viewsets.ModelViewSet):
     serializer_class = InstagramUserSerializer
     queryset = InstagramUser.objects.all()
@@ -16,7 +17,13 @@ class InstagramUserView(viewsets.ModelViewSet):
 
 class ContentView(viewsets.ModelViewSet):
     serializer_class = ContentSerializer
-    queryset = Content.objects.all()
+    
+    def get_queryset(self):
+        queryset = Content.objects.all()
+        owner = self.request.query_params.get('owner', None)
+        if owner is not None:
+            queryset = queryset.filter(owner=owner)
+        return queryset
 
 
 class InstagramDataView(APIView):
@@ -31,8 +38,10 @@ class InstagramDataView(APIView):
         )
         session = Session()
         if not param:
+            print(f"No param provided for {search_type}")
             return Response("Please provide a search parameter", status=400)
         if not categories:
+            print("No categories provided")
             return Response(
                 "Please provide a category or more for the account", status=400
             )
@@ -48,10 +57,20 @@ class InstagramDataView(APIView):
                     "bio": data.get("bio"),
                     "followers": data.get("followers"),
                     "following": data.get("following"),
-                    "profile_image": data.get("profile_image"),
                     "num_content": data.get("num_content"),
                 },
             )
+            response = requests.get(data.get("profile_image"))
+
+            if response.status_code == 200:
+                # Create a File object from the downloaded content
+                image_content = response.content
+                image_name = f"{insta_user.username}.jpg"
+                image_file = File(BytesIO(image_content), name=image_name)
+
+                # Assign the File object to the profile_image field
+                insta_user.profile_image.save(image_name, image_file)
+                
             if not created:
                 categories.extend(insta_user.get_list_field())
             insta_user.set_list_field(categories)
@@ -75,6 +94,7 @@ class InstagramDataView(APIView):
             return Response("Content grabbed successfully", status=200)
 
         elif search_type == "hashtag":
+            print("Hashtag not Implementet Yet")
             return Response("Please provide a valid search type", status=400)
 
         else:

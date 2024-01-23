@@ -42,7 +42,7 @@ class Session(requests.Session):
         data = self._fix_user_data(data, username)
         return data
 
-    def get_by_hashtag(self, hashtag):
+    def _get_by_hashtag(self, hashtag):
         response = self.get(
             f"https://www.instagram.com/api/v1/tags/logged_out_web_info/?tag_name={hashtag}"
         )
@@ -73,7 +73,7 @@ class Session(requests.Session):
                     else content["node"]["display_url"],
                     "description": content["node"]["edge_media_to_caption"]["edges"][0][
                         "node"
-                    ]["text"],
+                    ]["text"] if content["node"]["edge_media_to_caption"]["edges"] else "",
                     "views": content["node"]["video_view_count"]
                     if content["node"]["is_video"]
                     else 0,
@@ -91,7 +91,7 @@ class Session(requests.Session):
                 "id": content["node"]["id"],
                 "description": content["node"]["edge_media_to_caption"]["edges"][0][
                     "node"
-                ]["text"],
+                ]["text"] if content["node"]["edge_media_to_caption"]["edges"] else "",
                 "likes": content["node"]["edge_liked_by"]["count"],
                 "comments": content["node"]["edge_media_to_comment"]["count"],
                 "carousel": True,
