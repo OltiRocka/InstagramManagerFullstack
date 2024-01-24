@@ -64,7 +64,6 @@ export default function DataTable(props: DataTableProps) {
           .delete(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}${id}/`)
           .then((res) => {
             if (res.status === 204) {
-              console.log("Deleted");
               router.reload();
             }
           });

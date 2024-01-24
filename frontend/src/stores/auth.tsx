@@ -54,7 +54,6 @@ export const signupUser = async (
 
 export const logoutUser = async (): Promise<ApiResponse> => {
   const refresh = localStorage.getItem("RefreshToken");
-  console.log("refresh", refresh);
   if (!refresh) return { success: false, error: "No refresh token found" };
   try {
     const response = await api.post("/auth/logout/", { refresh });

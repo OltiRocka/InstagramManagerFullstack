@@ -31,7 +31,6 @@ const NavBar = () => {
 
   const router = useRouter();
   const handleLogout = async () => {
-    console.log("logout");
     try {
       await logoutUser();
       router.push("/auth/login");

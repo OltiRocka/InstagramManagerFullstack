@@ -122,7 +122,6 @@ export default function Accounts() {
       } else {
         setLoading(false);
         setResponseStatus("error");
-        console.log(response.data);
       }
     } catch (error) {
       setLoading(false);
@@ -145,7 +144,6 @@ export default function Accounts() {
         setResponseStatus("success");
       } else {
         setResponseStatus("error");
-        console.log(response.data);
       }
     } catch (error) {
       console.error("API call error:", error);
