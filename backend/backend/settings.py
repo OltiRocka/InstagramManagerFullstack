@@ -32,8 +32,6 @@ SECRET_KEY = "django-insecure-@5@7tkttj6a+b27c!p^z9l=q@9-_z2g0=47_1mog45c-)(8uih
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -100,7 +98,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 # Cors Configuration
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000","http://localhost:3001"]
+CORS_ALLOW_ALL_ORIGINS = True
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -130,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+ALLOWED_HOSTS = ["10.10.2.177", "localhost", "127.0.0.1"]
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 

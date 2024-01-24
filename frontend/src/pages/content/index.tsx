@@ -23,49 +23,49 @@ type InstagramContent = {
 };
 
 type AccountList = (string | number | boolean | Array<string>)[];
+type InstagramDataProps = {
+  data: InstagramContent[];
+};
 
 export default function ContentID(props: any) {
+  const [content, setContent] = React.useState([]);
+  const [param, setUsername] = React.useState<string>("");
   const [responseStatus, setResponseStatus] = React.useState<string | null>(
     null
   );
-  const [accountLists, setAccounts] = React.useState<AccountList[]>([]);
   const router = useRouter();
   const { id } = router.query;
   useEffect(() => {
     const fetchContent = async () => {
-      if (id) {
-        try {
-          const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/content/?owner=${id}`,
-            { timeout: 5000 }
-          );
-          if (res.status === 200) {
-            transformDataToLists(res.data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch content:", error);
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/content/`,
+          { timeout: 5000 }
+        );
+        if (res.status === 200) {
+          setContent(res.data);
         }
+      } catch (error) {
+        console.error("Failed to fetch content:", error);
       }
     };
 
     fetchContent();
   }, [id]);
-  const transformDataToLists = (data: InstagramContent[]) => {
-    setAccounts(
-      data.map((account) => [
-        account.id,
-        account.url,
-        account.display_url,
-        account.type,
-        account.carousel.toString(),
-        account.owner,
-        account.description,
-        account.likes,
-        account.comments,
-        account.views,
-        parseCategories(account.categories),
-      ])
-    );
+  const transformDataToLists = (data: InstagramContent[]): AccountList[] => {
+    return data.map((account) => [
+      account.id,
+      account.url,
+      account.display_url,
+      account.type,
+      account.carousel.toString(),
+      account.owner,
+      account.description,
+      account.likes,
+      account.comments,
+      account.views,
+      parseCategories(account.categories), // Call a separate function to parse or return an empty string
+    ]);
   };
 
   // Function to parse JSON or return an empty string
@@ -82,7 +82,7 @@ export default function ContentID(props: any) {
     // Perform the API call with user input
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/content/?owner=${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/content/`
       );
 
       // Check the response status
@@ -97,6 +97,7 @@ export default function ContentID(props: any) {
     }
   };
 
+  const accountLists = transformDataToLists(content);
   return (
     <main className={styles.main}>
       <NavBar />

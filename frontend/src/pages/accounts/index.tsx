@@ -4,8 +4,12 @@ import "../../app/globals.css";
 import NavBar from "@/components/navBar";
 import DataTable from "../../components/table";
 import axios from "axios";
-
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
+import SearchIcon from "@/assets/icons/SearchIcon.svg";
+import { useRouter } from "next/router";
+import CircularProgress from "@mui/material/CircularProgress";
+
 type InstagramAccount = {
   id: string;
   username: string;
@@ -33,12 +37,17 @@ export default function Accounts() {
   const [responseStatus, setResponseStatus] = React.useState<string | null>(
     null
   );
+  const [loading, setLoading] = React.useState<boolean>(false);
 
+  const router = useRouter();
   useEffect(() => {
     const fetchAccounts = async () => {
-      const res = await axios.get("http://localhost:8000/api/users/", {
-        timeout: 5000,
-      });
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/`,
+        {
+          timeout: 5000,
+        }
+      );
       if (res.status === 200) {
         setAccounts(res.data);
       }
@@ -49,14 +58,13 @@ export default function Accounts() {
   const transformDataToLists = (data: InstagramAccount[]): AccountList[] => {
     return data.map((account) => [
       account.id,
+      account.profile_image,
       account.username,
-      account.is_private.toString(),
       account.bio,
       account.followers,
       account.following,
-      account.profile_image,
       account.num_content,
-      JSON.stringify(account.categories),
+      JSON.parse(account.categories),
     ]);
   };
   const style = {
@@ -84,9 +92,47 @@ export default function Accounts() {
     flexDirection: "column",
     alignItems: "center",
   };
+  const fetchAccounts = async () => {
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/`,
+      {
+        timeout: 5000,
+      }
+    );
+    if (res.status === 200) {
+      setAccounts(res.data);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const data = { param, categories };
+    // Perform the API call with user input
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/insta/username/`,
+        data
+      );
+
+      // Check the response status
+      if (response.status === 200) {
+        setLoading(false);
+        setResponseStatus("success");
+        fetchAccounts();
+      } else {
+        setLoading(false);
+        setResponseStatus("error");
+        console.log(response.data);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("API call error:", error);
+      setResponseStatus("error");
+    }
+  };
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = { param };
     // Perform the API call with user input
     try {
       const response = await axios.post(
@@ -106,9 +152,7 @@ export default function Accounts() {
       setResponseStatus("error");
     }
   };
-
   const accountLists = transformDataToLists(accounts);
-  console.log(accountLists);
   return (
     <main className={styles.main}>
       <NavBar />
@@ -116,8 +160,13 @@ export default function Accounts() {
         <div className={styles.secondContainer}>
           <h2 className={styles.title}>Accounts</h2>
           <div className={styles.functions}>
-            <p>Search</p>
-            <Button onClick={handleOpen}>Add</Button>
+            <form className={styles.search_container} onSubmit={handleSearch}>
+              <SearchIcon />
+              <input type="text" placeholder="Search..." />
+            </form>
+            <Button onClick={handleOpen}>
+              <AddCircleOutlineIcon />
+            </Button>
             <Modal
               open={open}
               onClose={handleClose}
@@ -147,17 +196,33 @@ export default function Accounts() {
                     fullWidth
                     margin="normal"
                   />
-
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit
-                  </Button>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "90%",
+                    }}
+                  >
+                    <Button type="submit" variant="contained" color="primary">
+                      Submit
+                    </Button>
+                    {responseStatus === "success" && loading === false && (
+                      <Typography style={{ color: "green" }}>
+                        Success!
+                      </Typography>
+                    )}
+                    {responseStatus === "error" && loading === false && (
+                      <Typography style={{ color: "red" }}>Error!</Typography>
+                    )}
+                    {loading && (
+                      <CircularProgress
+                        size={24}
+                        className={styles.buttonProgress}
+                      />
+                    )}
+                  </div>
                 </form>
-                {responseStatus === "success" && (
-                  <Typography style={{ color: "green" }}>Success!</Typography>
-                )}
-                {responseStatus === "error" && (
-                  <Typography style={{ color: "red" }}>Error!</Typography>
-                )}
               </Box>
             </Modal>
           </div>
@@ -169,13 +234,14 @@ export default function Accounts() {
                   label: "ID",
                 },
                 {
+                  id: "profile_image",
+                  label: "Profile Picture",
+                },
+                {
                   id: "username",
                   label: "Username",
                 },
-                {
-                  id: "is_private",
-                  label: "Private",
-                },
+
                 {
                   id: "bio",
                   label: "Bio",
@@ -188,13 +254,10 @@ export default function Accounts() {
                   id: "following",
                   label: "Following",
                 },
-                {
-                  id: "profile_image",
-                  label: "Profile Image",
-                },
+
                 {
                   id: "num_content",
-                  label: "Content Amount",
+                  label: "Content",
                 },
                 {
                   id: "categories",
@@ -203,6 +266,8 @@ export default function Accounts() {
               ]}
               rows={accountLists}
               display={true}
+              details={true}
+              endpoint="/api/users/"
             />
           </div>
         </div>

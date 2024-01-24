@@ -10,17 +10,20 @@ from utils.request import Session
 import requests
 from django.core.files import File
 from io import BytesIO
+
+
 class InstagramUserView(viewsets.ModelViewSet):
     serializer_class = InstagramUserSerializer
     queryset = InstagramUser.objects.all()
 
 
+
 class ContentView(viewsets.ModelViewSet):
     serializer_class = ContentSerializer
-    
+
     def get_queryset(self):
         queryset = Content.objects.all()
-        owner = self.request.query_params.get('owner', None)
+        owner = self.request.query_params.get("owner", None)
         if owner is not None:
             queryset = queryset.filter(owner=owner)
         return queryset
@@ -70,7 +73,7 @@ class InstagramDataView(APIView):
 
                 # Assign the File object to the profile_image field
                 insta_user.profile_image.save(image_name, image_file)
-                
+
             if not created:
                 categories.extend(insta_user.get_list_field())
             insta_user.set_list_field(categories)

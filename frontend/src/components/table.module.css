@@ -1,33 +1,52 @@
-@import url("https://fonts.googleapis.com/css2?family=Mynerve&family=Poppins:wght@700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Azeret+Mono&display=swap");
+
+.table_container {
+  max-width: 85vw;
+}
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  display: block;
+  height: 500px;
+  overflow-y: scroll;
 }
 
+.table thead th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
 .tr {
   height: 30px;
-  border-bottom: 1px solid #ccc;
 }
 
 .th {
   border-bottom: 1px solid #ccc;
+  padding: 0 15px;
   text-align: left;
+  padding-bottom: 20px;
+}
+.th:first-child div {
+  width: 30px;
 }
 .th:first-child {
-  text-align: center;
+  width: 30px;
 }
 .th:nth-child(2) {
   display: none;
 }
+
 .tr td:nth-child(2) {
   display: none;
 }
+
 .tr td {
   padding: 0 15px;
   max-width: 200px;
+  border-bottom: 1px solid #ccc;
   min-width: 150px;
   text-align: left;
-  height: 50px;
+  height: 80px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -37,7 +56,8 @@
 }
 .tr td:last-child {
   min-width: 0px;
-  width: 1-0px;
+  width: 10px;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -54,23 +74,61 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .image {
   border-radius: 30px;
   padding: 10px;
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px;
+  max-height: 80px;
 }
 .checkbox {
-  width: 17px;
-  height: 17px;
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  font-size: 32px;
+  padding: 2px;
+  font-size: 32px;
+  border: 2px solid #ccc;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  align-items: center;
   cursor: pointer;
 }
+.checkbox::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(20% 30%, 40% 50%, 80% 10%, 100% 30%, 40% 90%, 0 50%);
+  transform: scale(0);
+  background-color: white;
+}
 
+.checkbox:checked {
+  border: 2px solid #1976d2;
+  background-color: #1976d2;
+}
+.checkbox:checked::before {
+  transform: scale(1);
+}
+
+.cell_container {
+  display: flex;
+  gap: 10px;
+}
+.cell_type {
+  border-radius: 5px;
+  width: fit-content;
+  padding: 5px 10px;
+}
 .tfoot {
   display: flex;
   justify-content: flex-end;
   gap: 100px;
   align-items: center;
+  border-top: 1px solid #ccc;
   padding: 20px;
 }
 
@@ -99,5 +157,6 @@
   padding: 0px 0px 0px 5px;
   background-color: white;
   border: 2px #ccc solid;
+  color: black;
   border-radius: 5px;
 }

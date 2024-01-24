@@ -12,7 +12,6 @@ import LogIcon from "@/assets/icons/LogIcon.svg";
 import SearchIcon from "@/assets/icons/SearchIcon.svg";
 import useHover from "@/hooks/useHover";
 import { logoutUser } from "@/stores/auth";
-import Switch from "./Switch";
 import { useRouter } from "next/navigation";
 
 const NavBar = () => {

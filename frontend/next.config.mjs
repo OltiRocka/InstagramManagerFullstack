@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    remotePatterns: [{ hostname: "127.0.0.1" }, { hostname: "fbcdn.net" }],
+    remotePatterns: [
+      { hostname: "127.0.0.1" },
+      { hostname: "fbcdn.net" },
+      { hostname: "10.10.2.177" },
+    ],
   },
   webpack(config) {
     config.module.rules.push({
