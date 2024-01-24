@@ -6,9 +6,10 @@
 .table {
   width: 100%;
   border-collapse: separate;
+  height: 70vh;
   display: block;
-  height: 500px;
   overflow-y: scroll;
+  scrollbar-width: thin;
 }
 
 .table thead th {
@@ -17,7 +18,7 @@
   background-color: white;
 }
 .tr {
-  height: 30px;
+  height: calc((70vh - 141px) / 5);
 }
 
 .th {
@@ -26,11 +27,10 @@
   text-align: left;
   padding-bottom: 20px;
 }
-.th:first-child div {
-  width: 30px;
-}
+
 .th:first-child {
-  width: 30px;
+  width: 10px;
+  padding: 0;
 }
 .th:nth-child(2) {
   display: none;
@@ -39,14 +39,16 @@
 .tr td:nth-child(2) {
   display: none;
 }
-
+.tr td:first-child {
+  padding: 0;
+}
 .tr td {
   padding: 0 15px;
   max-width: 200px;
   border-bottom: 1px solid #ccc;
   min-width: 150px;
   text-align: left;
-  height: 80px;
+  max-height: calc((70vh- 141px) / 5);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,10 +78,10 @@
 }
 
 .image {
-  border-radius: 30px;
+  border-radius: 20px;
   padding: 10px;
-  max-width: 80px;
-  max-height: 80px;
+  max-width: 60%;
+  max-height: 60%;
 }
 .checkbox {
   appearance: none;
@@ -141,7 +143,7 @@
 }
 
 .delete {
-  font-size: 32px;
+  font-size: 16px;
   color: red;
   cursor: pointer;
 }

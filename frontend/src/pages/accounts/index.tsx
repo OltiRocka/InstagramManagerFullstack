@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./accounts.module.css";
 import "../../app/globals.css";
 import NavBar from "@/components/navBar";
@@ -11,7 +11,9 @@ import { useRouter } from "next/router";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+// TODO: Add the DeleteIcon with stateManagment
 type InstagramAccount = {
   id: string;
   username: string;
@@ -23,25 +25,19 @@ type InstagramAccount = {
   num_content: number;
   categories: string;
 };
-
-type AccountList = (string | number | boolean)[];
-type InstagramDataProps = {
-  data: InstagramAccount[];
-};
+type AccountList = (string | number | boolean | Array<string>)[];
 
 export default function Accounts() {
-  const [accounts, setAccounts] = React.useState([]);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [param, setUsername] = React.useState<string>("");
-  const [categories, setCategories] = React.useState<string[]>([]);
-  const [responseStatus, setResponseStatus] = React.useState<string | null>(
-    null
-  );
+  const [accountLists, setAccounts] = useState<AccountList[]>([[]]);
+  const [open, setOpen] = useState(false);
+  const [param, setUsername] = useState<string>("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [responseStatus, setResponseStatus] = useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const router = useRouter();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   useEffect(() => {
     const fetchAccounts = async () => {
       const res = await axios.get(
@@ -51,23 +47,34 @@ export default function Accounts() {
         }
       );
       if (res.status === 200) {
-        setAccounts(res.data);
+        transformDataToLists(res.data);
       }
     };
     fetchAccounts();
   }, []);
 
-  const transformDataToLists = (data: InstagramAccount[]): AccountList[] => {
-    return data.map((account) => [
-      account.id,
-      account.profile_image,
-      account.username,
-      account.bio,
-      account.followers,
-      account.following,
-      account.num_content,
-      JSON.parse(account.categories),
-    ]);
+  const transformDataToLists = (data: InstagramAccount[]) => {
+    setAccounts(
+      data.map((account) => [
+        account.id,
+        account.profile_image,
+        account.username,
+        account.bio,
+        account.followers,
+        account.following,
+        account.num_content,
+        parseCategories(account.categories),
+      ])
+    );
+  };
+
+  const parseCategories = (categories: string): string | Array<string> => {
+    try {
+      const parsedData = JSON.parse(categories);
+      return Array.isArray(parsedData) ? parsedData : "";
+    } catch (error) {
+      return "";
+    }
   };
   const style = {
     position: "absolute",
@@ -102,7 +109,7 @@ export default function Accounts() {
       }
     );
     if (res.status === 200) {
-      setAccounts(res.data);
+      transformDataToLists(res.data);
     }
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -152,14 +159,13 @@ export default function Accounts() {
       setResponseStatus("error");
     }
   };
-  const accountLists = transformDataToLists(accounts);
   return (
     <main className={styles.main}>
       <NavBar />
       <div className={styles.container}>
         <div className={styles.secondContainer}>
-          <h2 className={styles.title}>Accounts</h2>
           <div className={styles.functions}>
+            <h2 className={styles.title}>Accounts</h2>
             <form className={styles.search_container} onSubmit={handleSearch}>
               <SearchIcon />
               <input type="text" placeholder="Search..." />

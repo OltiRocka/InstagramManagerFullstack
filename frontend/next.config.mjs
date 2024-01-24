@@ -3,6 +3,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { hostname: "127.0.0.1" },
+      { hostname: "localhost" },
       { hostname: "fbcdn.net" },
       { hostname: "10.10.2.177" },
     ],

@@ -1,10 +1,9 @@
 import styles from "./table.module.css";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import IconButton from "@mui/material/IconButton";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -19,16 +18,13 @@ interface DataTableProps {
 
 export default function DataTable(props: DataTableProps) {
   const { rows, columns, display, details, endpoint } = props;
-  const [page, setPage] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [diplayRows, setDisplayRows] = React.useState(
-    rows.slice(page, rowsPerPage)
-  );
-  const [clickedCheckboxes, setClickedCheckboxes] = React.useState<string[]>(
-    []
-  );
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [diplayRows, setDisplayRows] = useState(rows.slice(page, rowsPerPage));
+  const [clickedCheckboxes, setClickedCheckboxes] = useState<string[]>([]);
   const router = useRouter();
-  React.useEffect(() => {
+
+  useEffect(() => {
     setDisplayRows(
       rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     );
@@ -37,11 +33,20 @@ export default function DataTable(props: DataTableProps) {
   const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checkboxId = event.target.id;
     if (event.target.checked) {
-      setClickedCheckboxes((prevState) => [...prevState, checkboxId]);
+      if (checkboxId === "all") {
+        setClickedCheckboxes(rows.map((item) => item[0]));
+        setClickedCheckboxes((prevState) => [...prevState, "all"]);
+      } else {
+        setClickedCheckboxes((prevState) => [...prevState, checkboxId]);
+      }
     } else {
-      setClickedCheckboxes((prevState) =>
-        prevState.filter((id) => id !== checkboxId)
-      );
+      if (checkboxId === "all") {
+        setClickedCheckboxes([]);
+      } else {
+        setClickedCheckboxes((prevState) =>
+          prevState.filter((id) => id !== checkboxId)
+        );
+      }
     }
   };
 
@@ -58,7 +63,11 @@ export default function DataTable(props: DataTableProps) {
     setDisplayRows(rows.slice(0, event.target.value));
   };
   const handleDelete = () => {
-    if (Array.isArray(clickedCheckboxes) && clickedCheckboxes.length > 0) {
+    if (
+      Array.isArray(clickedCheckboxes) &&
+      clickedCheckboxes.length > 0 &&
+      JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
+    ) {
       clickedCheckboxes.forEach((id) => {
         axios
           .delete(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}${id}/`)
@@ -75,9 +84,15 @@ export default function DataTable(props: DataTableProps) {
     <div className={styles.table_container}>
       <table className={styles.table}>
         <thead className={styles.thead}>
-          <tr>
-            <th className={styles.th} onClick={handleDelete}>
-              <DeleteIcon className={styles.delete} />
+          <tr key="headerRow">
+            <th className={styles.th} onClick={handleDelete} key="delete-icon">
+              <input
+                className={styles.checkbox}
+                type="checkbox"
+                id="all"
+                checked={clickedCheckboxes.includes("all")}
+                onChange={handleCheck}
+              />
             </th>
             {columns.map((column) => (
               <th key={column.id} className={styles.th}>
@@ -85,28 +100,34 @@ export default function DataTable(props: DataTableProps) {
               </th>
             ))}
             {details ? (
-              <th className={styles.th}>Details</th>
+              <th key={1001} className={styles.th}>
+                Details
+              </th>
             ) : (
-              <th className={styles.th} style={{ display: "none" }}></th>
+              <th
+                key={1001}
+                className={styles.th}
+                style={{ display: "none" }}
+              ></th>
             )}
           </tr>
         </thead>
         <tbody>
           {diplayRows &&
             diplayRows.length > 0 &&
-            diplayRows.map((row, index) => (
-              <tr key={row[0]} className={styles.tr}>
-                <td className={styles.td}>
+            diplayRows.map((row, rowIndex) => (
+              <tr key={`rowi-${row[0]}`} className={styles.tr}>
+                <td className={styles.td} key={`checkbox-${row[0]}`}>
                   <input
                     className={styles.checkbox}
                     type="checkbox"
                     id={row[0]}
-                    checked={clickedCheckboxes.includes(row[0])}
+                    checked={clickedCheckboxes.includes("all")}
                     onChange={handleCheck}
                   />
                 </td>
-                {row.map((cell, index) => (
-                  <td key={index} className={styles.td}>
+                {row.map((cell, cellIndex) => (
+                  <td key={`${rowIndex}-${cellIndex}`} className={styles.td}>
                     {typeof cell === "string" &&
                     cell.includes("http") &&
                     display ? (
@@ -137,13 +158,17 @@ export default function DataTable(props: DataTableProps) {
                 ))}
 
                 {details ? (
-                  <td className={styles.td}>
+                  <td className={styles.td} key={20000}>
                     <a href={`/content/${row[0]}`} style={{ color: "blue" }}>
                       <ExitToAppIcon />
                     </a>
                   </td>
                 ) : (
-                  <td className={styles.td} style={{ display: "none" }}></td>
+                  <td
+                    key={2000}
+                    className={styles.td}
+                    style={{ display: "none" }}
+                  ></td>
                 )}
               </tr>
             ))}
