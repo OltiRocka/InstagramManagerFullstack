@@ -9,6 +9,8 @@ import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import SearchIcon from "@/assets/icons/SearchIcon.svg";
 import { useRouter } from "next/router";
 import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import CheckIcon from "@mui/icons-material/Check";
 
 type InstagramAccount = {
   id: string;
@@ -206,12 +208,15 @@ export default function Accounts() {
                       Submit
                     </Button>
                     {responseStatus === "success" && loading === false && (
-                      <Typography style={{ color: "green" }}>
+                      <Alert
+                        icon={<CheckIcon fontSize="inherit" />}
+                        severity="success"
+                      >
                         Success!
-                      </Typography>
+                      </Alert>
                     )}
                     {responseStatus === "error" && loading === false && (
-                      <Typography style={{ color: "red" }}>Error!</Typography>
+                      <Alert severity="error">Error</Alert>
                     )}
                     {loading && (
                       <CircularProgress
