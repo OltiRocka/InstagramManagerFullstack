@@ -1,9 +1,13 @@
-from django.db import models
 import json
+import os
+from django.db import models
+from django.conf import settings
 
 
 # Create your models here.
 class InstagramUser(models.Model):
+    """Scaped Users"""
+
     id = models.CharField(max_length=40, primary_key=True)
     username = models.CharField(max_length=40)
     is_private = models.BooleanField(default=True)
@@ -23,10 +27,20 @@ class InstagramUser(models.Model):
         return []
 
     def __str__(self):
-        return self.username
+        return str(self.username)
+
+    def delete(self, *args, **kwargs):
+        if self.profile_image:
+            file_path = os.path.join(settings.MEDIA_ROOT, self.profile_image.name)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        super(InstagramUser, self).delete(*args, **kwargs)
 
 
 class Content(models.Model):
+    """Scaped Content"""
+
     CONTENT_TYPES = (
         ("image", "Image"),
         ("video", "Video"),
@@ -46,12 +60,12 @@ class Content(models.Model):
     )
 
     def set_list_field(self, data):
-        self.list_field = json.dumps(data)
+        self.categories = json.dumps(data)
 
     def get_list_field(self):
-        if self.list_field:
-            return json.loads(self.list_field)
+        if self.categories:
+            return json.loads(self.categories)
         return []
 
     def __str__(self):
-        return self.description
+        return str(self.description)

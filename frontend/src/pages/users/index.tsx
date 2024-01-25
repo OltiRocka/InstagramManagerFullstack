@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import styles from "./accounts.module.css";
-import "../../app/globals.css";
+import styles from "./users.module.css";
+import "@/app/globals.css";
 import NavBar from "@/components/navBar";
-import DataTable from "../../components/table";
+import DataTable from "@/components/table";
 import axios from "axios";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
@@ -34,9 +34,9 @@ export default function Accounts() {
   const [categories, setCategories] = useState<string[]>([]);
   const [responseStatus, setResponseStatus] = useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [clickedCheckboxes, setClickedCheckboxes] = useState<string[]>([]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -138,6 +138,51 @@ export default function Accounts() {
       setResponseStatus("error");
     }
   };
+
+  const handleDelete = () => {
+    if (
+      Array.isArray(clickedCheckboxes) &&
+      clickedCheckboxes.length > 0 &&
+      JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
+    ) {
+      clickedCheckboxes.forEach((id) => {
+        if (id !== "all") {
+          axios
+            .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}/`)
+            .then((res) => {
+              if (res.status === 204) {
+                fetchAccounts();
+                setClickedCheckboxes([]);
+              }
+            });
+        }
+      });
+    }
+  };
+
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    rows: any[][]
+  ) => {
+    const checkboxId = event.target.id;
+    if (event.target.checked) {
+      if (checkboxId === "all") {
+        setClickedCheckboxes(rows.map((item) => item[0]));
+        setClickedCheckboxes((prevState) => [...prevState, "all"]);
+      } else {
+        setClickedCheckboxes((prevState) => [...prevState, checkboxId]);
+      }
+    } else {
+      if (checkboxId === "all") {
+        setClickedCheckboxes([]);
+      } else {
+        setClickedCheckboxes((prevState) =>
+          prevState.filter((id) => id !== checkboxId)
+        );
+      }
+    }
+  };
+
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = { param };
@@ -165,17 +210,17 @@ export default function Accounts() {
       <div className={styles.container}>
         <div className={styles.secondContainer}>
           <div className={styles.functions}>
-            <h2 className={styles.title}>Accounts</h2>
+            <h2 className={styles.title}>Users</h2>
             <form className={styles.search_container} onSubmit={handleSearch}>
               <SearchIcon />
               <input type="text" placeholder="Search..." />
             </form>
-            <Button onClick={handleOpen}>
+            <Button onClick={() => setOpen(true)}>
               <AddCircleOutlineIcon />
             </Button>
             <Modal
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
@@ -234,6 +279,15 @@ export default function Accounts() {
                 </form>
               </Box>
             </Modal>
+            <DeleteIcon
+              onClick={handleDelete}
+              style={
+                clickedCheckboxes.length > 0 &&
+                JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
+                  ? { color: "red", cursor: "pointer" }
+                  : { color: "lightgrey" }
+              }
+            />
           </div>
           <div className={styles.table_container}>
             <DataTable
@@ -276,7 +330,8 @@ export default function Accounts() {
               rows={accountLists}
               display={true}
               details={true}
-              endpoint="/api/users/"
+              handleCheckboxChange={handleCheckboxChange}
+              clickedCheckboxes={clickedCheckboxes}
             />
           </div>
         </div>

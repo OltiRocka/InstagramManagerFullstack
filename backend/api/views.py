@@ -1,24 +1,36 @@
+from io import BytesIO
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from .serializers import (
-    InstagramUserSerializer,
-    ContentSerializer,
-)
-from .models import InstagramUser, Content
 from rest_framework.response import Response
 from utils.request import Session
 import requests
 from django.core.files import File
-from io import BytesIO
+from .serializers import (
+    InstagramUserSerializer,
+    ContentSerializer,
+)
+
+from .models import InstagramUser, Content
 
 
 class InstagramUserView(viewsets.ModelViewSet):
+    """Scraped Instagram user data View
+
+    Args:
+        viewsets (model): Viewsets for django rest framework
+    """
+
     serializer_class = InstagramUserSerializer
     queryset = InstagramUser.objects.all()
 
 
-
 class ContentView(viewsets.ModelViewSet):
+    """Scraped Instagram content data View
+
+    Args:
+        viewsets (model): Viewsets for django rest framework
+    """
+
     serializer_class = ContentSerializer
 
     def get_queryset(self):
@@ -30,13 +42,19 @@ class ContentView(viewsets.ModelViewSet):
 
 
 class InstagramDataView(APIView):
-    def post(self, request, format=None):
+    """Scraper View
+
+    Args:
+        viewsets (model): APIViw for django rest framework
+    """
+
+    def post(self, request):
         data = request.data
         search_type = data.get("search", "username")
         param = data.get("param", None)
         categories = (
             data.get("categories", None)
-            if type(data.get("categories", [])) == list
+            if isinstance(data.get("categories", []), list)
             else [data.get("categories", None)]
         )
         session = Session()
@@ -63,7 +81,7 @@ class InstagramDataView(APIView):
                     "num_content": data.get("num_content"),
                 },
             )
-            response = requests.get(data.get("profile_image"))
+            response = requests.get(data.get("profile_image"), timeout=2000)
 
             if response.status_code == 200:
                 # Create a File object from the downloaded content

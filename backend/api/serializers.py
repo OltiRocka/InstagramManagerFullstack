@@ -3,7 +3,11 @@ from .models import InstagramUser, Content
 
 
 class InstagramUserSerializer(serializers.ModelSerializer):
+    """Scraped InstagramUser serializer"""
+
     class Meta:
+        """Meta"""
+
         model = InstagramUser
         fields = (
             "id",
@@ -19,7 +23,11 @@ class InstagramUserSerializer(serializers.ModelSerializer):
 
 
 class ContentSerializer(serializers.ModelSerializer):
+    """Scraped Instagram Content serializer"""
+
     class Meta:
+        """Meta"""
+
         model = Content
         fields = (
             "id",

@@ -16,18 +16,20 @@
   margin-left: 200px;
 }
 .secondContainer {
-  padding-top: 5vh;
+  padding-top: 1vh;
   min-height: 100vh;
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 50px;
 }
 .functions {
   display: flex;
   height: 5vh;
 }
-
+.title {
+  padding-right: 50px;
+}
 .form input {
   width: 300px;
   height: 40px;

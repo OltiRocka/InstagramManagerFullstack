@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./id.module.css";
-import "../../app/globals.css";
+import "@/app/globals.css";
 import NavBar from "@/components/navBar";
-import DataTable from "../../components/table";
+import DataTable from "@/components/table";
 import axios from "axios";
 import SearchIcon from "@/assets/icons/SearchIcon.svg";
-
-import { Button } from "@mui/material";
 import { useRouter } from "next/router";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 type InstagramContent = {
   id: string;
   url: string;
@@ -25,31 +25,74 @@ type InstagramContent = {
 type AccountList = (string | number | boolean | Array<string>)[];
 
 export default function ContentID(props: any) {
-  const [responseStatus, setResponseStatus] = React.useState<string | null>(
-    null
-  );
-  const [accountLists, setAccounts] = React.useState<AccountList[]>([]);
+  const [responseStatus, setResponseStatus] = useState<string | null>(null);
+  const [clickedCheckboxes, setClickedCheckboxes] = useState<string[]>([]);
+  const [accountLists, setAccounts] = useState<AccountList[]>([]);
   const router = useRouter();
   const { id } = router.query;
-  useEffect(() => {
-    const fetchContent = async () => {
-      if (id) {
-        try {
-          const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/content/?owner=${id}`,
-            { timeout: 5000 }
-          );
-          if (res.status === 200) {
-            transformDataToLists(res.data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch content:", error);
-        }
-      }
-    };
 
+  useEffect(() => {
     fetchContent();
   }, [id]);
+
+  const fetchContent = async () => {
+    if (id) {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/content/?owner=${id}`,
+          { timeout: 5000 }
+        );
+        if (res.status === 200) {
+          transformDataToLists(res.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch content:", error);
+      }
+    }
+  };
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    rows: any[][]
+  ) => {
+    const checkboxId = event.target.id;
+    if (event.target.checked) {
+      if (checkboxId === "all") {
+        setClickedCheckboxes(rows.map((item) => item[0]));
+        setClickedCheckboxes((prevState) => [...prevState, "all"]);
+      } else {
+        setClickedCheckboxes((prevState) => [...prevState, checkboxId]);
+      }
+    } else {
+      if (checkboxId === "all") {
+        setClickedCheckboxes([]);
+      } else {
+        setClickedCheckboxes((prevState) =>
+          prevState.filter((id) => id !== checkboxId)
+        );
+      }
+    }
+  };
+
+  const handleDelete = () => {
+    if (
+      Array.isArray(clickedCheckboxes) &&
+      clickedCheckboxes.length > 0 &&
+      JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
+    ) {
+      clickedCheckboxes.forEach((id) => {
+        if (id !== "all") {
+          axios
+            .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/content/${id}/`)
+            .then((res) => {
+              if (res.status === 204) {
+                fetchContent();
+                setClickedCheckboxes([]);
+              }
+            });
+        }
+      });
+    }
+  };
   const transformDataToLists = (data: InstagramContent[]) => {
     setAccounts(
       data.map((account) => [
@@ -102,12 +145,21 @@ export default function ContentID(props: any) {
       <NavBar />
       <div className={styles.container}>
         <div className={styles.secondContainer}>
-          <h2 className={styles.title}>Content</h2>
           <div className={styles.functions}>
+            <h2 className={styles.title}>Content</h2>
             <form className={styles.search_container}>
               <SearchIcon />
               <input type="text" placeholder="Search..." />
             </form>
+            <DeleteIcon
+              onClick={handleDelete}
+              style={
+                clickedCheckboxes.length > 0 &&
+                JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
+                  ? { color: "red", cursor: "pointer" }
+                  : { color: "lightgrey" }
+              }
+            />
           </div>
           <div className={styles.table_container}>
             <DataTable
@@ -160,7 +212,8 @@ export default function ContentID(props: any) {
               rows={accountLists}
               display={false}
               details={false}
-              endpoint="/api/content/"
+              handleCheckboxChange={handleCheckboxChange}
+              clickedCheckboxes={clickedCheckboxes}
             />
           </div>
         </div>

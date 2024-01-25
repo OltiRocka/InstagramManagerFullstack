@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./profile.module.css";
 import NavBar from "@/components/navBar";
-import "../../app/globals.css";
+import "@/app/globals.css";
 
 export default function Profile() {
   return (

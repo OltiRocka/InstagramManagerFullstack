@@ -3,13 +3,18 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import styles from "./navBar.module.css";
 import Image from "next/image";
-import BellIcon from "@/assets/icons/BellIcon.svg";
-import BoxIcon from "@/assets/icons/BoxIcon.svg";
-import ChartIcon from "@/assets/icons/ChartIcon.svg";
-import GraphIcon from "@/assets/icons/GraphIcon.svg";
-import HomeIcon from "@/assets/icons/HomeIcon.svg";
-import LogIcon from "@/assets/icons/LogIcon.svg";
-import SearchIcon from "@/assets/icons/SearchIcon.svg";
+
+import {
+  NotificationsOutlined,
+  PieChartOutlineOutlined,
+  ContactPageOutlined,
+  InsertChartOutlined,
+  GroupOutlined,
+  SpaceDashboardOutlined,
+  LogoutOutlined,
+  SearchOutlined,
+  VideoCameraBackOutlined,
+} from "@mui/icons-material";
 import useHover from "@/hooks/useHover";
 import { logoutUser } from "@/stores/auth";
 import { useRouter } from "next/navigation";
@@ -61,12 +66,12 @@ const NavBar = () => {
           )}
         </Link>
         <form className={styles.search_container}>
-          <SearchIcon />
+          <SearchOutlined />
           <input type="text" placeholder="Search..." />
         </form>
         <div className={styles.content}>
           <Link href="/" className={styles.element}>
-            <HomeIcon />
+            <SpaceDashboardOutlined />
             <p
               className={`${styles.text} ${
                 hovered ? styles.active : styles.null
@@ -76,7 +81,7 @@ const NavBar = () => {
             </p>
           </Link>
           <Link href="/revenue" className={styles.element}>
-            <GraphIcon />
+            <InsertChartOutlined />
             <p
               className={`${styles.text} ${
                 hovered ? styles.active : styles.null
@@ -86,7 +91,7 @@ const NavBar = () => {
             </p>
           </Link>
           <Link href="/notifications" className={styles.element}>
-            <BellIcon />
+            <NotificationsOutlined />
             <p
               className={`${styles.text} ${
                 hovered ? styles.active : styles.null
@@ -96,7 +101,7 @@ const NavBar = () => {
             </p>
           </Link>
           <Link href="/analytics" className={styles.element}>
-            <ChartIcon />
+            <PieChartOutlineOutlined />
             <p
               className={`${styles.text} ${
                 hovered ? styles.active : styles.null
@@ -105,14 +110,35 @@ const NavBar = () => {
               Analytics
             </p>
           </Link>
+
           <Link href="/accounts" className={styles.element}>
-            <BoxIcon />
+            <GroupOutlined />
             <p
               className={`${styles.text} ${
                 hovered ? styles.active : styles.null
               }`}
             >
               Accounts
+            </p>
+          </Link>
+          <Link href="/users" className={styles.element}>
+            <ContactPageOutlined />
+            <p
+              className={`${styles.text} ${
+                hovered ? styles.active : styles.null
+              }`}
+            >
+              Users
+            </p>
+          </Link>
+          <Link href="/content" className={styles.element}>
+            <VideoCameraBackOutlined />
+            <p
+              className={`${styles.text} ${
+                hovered ? styles.active : styles.null
+              }`}
+            >
+              Content
             </p>
           </Link>
         </div>
@@ -123,7 +149,7 @@ const NavBar = () => {
           className={styles.element}
           style={{ cursor: "pointer" }}
         >
-          <LogIcon />
+          <LogoutOutlined />
           <p
             className={`${styles.text} ${
               hovered ? styles.active : styles.null

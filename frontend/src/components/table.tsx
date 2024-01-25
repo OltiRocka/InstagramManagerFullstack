@@ -13,42 +13,28 @@ interface DataTableProps {
   columns: { id: string; label: string }[];
   display: boolean;
   details: boolean;
-  endpoint: string;
+  clickedCheckboxes: string[];
+  handleCheckboxChange: any;
 }
 
 export default function DataTable(props: DataTableProps) {
-  const { rows, columns, display, details, endpoint } = props;
+  const {
+    rows,
+    columns,
+    display,
+    details,
+    handleCheckboxChange,
+    clickedCheckboxes,
+  } = props;
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [diplayRows, setDisplayRows] = useState(rows.slice(page, rowsPerPage));
-  const [clickedCheckboxes, setClickedCheckboxes] = useState<string[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     setDisplayRows(
       rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     );
   }, [rows, page, rowsPerPage]);
-
-  const handleCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const checkboxId = event.target.id;
-    if (event.target.checked) {
-      if (checkboxId === "all") {
-        setClickedCheckboxes(rows.map((item) => item[0]));
-        setClickedCheckboxes((prevState) => [...prevState, "all"]);
-      } else {
-        setClickedCheckboxes((prevState) => [...prevState, checkboxId]);
-      }
-    } else {
-      if (checkboxId === "all") {
-        setClickedCheckboxes([]);
-      } else {
-        setClickedCheckboxes((prevState) =>
-          prevState.filter((id) => id !== checkboxId)
-        );
-      }
-    }
-  };
 
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
@@ -62,36 +48,20 @@ export default function DataTable(props: DataTableProps) {
     setPage(0);
     setDisplayRows(rows.slice(0, event.target.value));
   };
-  const handleDelete = () => {
-    if (
-      Array.isArray(clickedCheckboxes) &&
-      clickedCheckboxes.length > 0 &&
-      JSON.stringify(clickedCheckboxes) !== JSON.stringify(["all"])
-    ) {
-      clickedCheckboxes.forEach((id) => {
-        axios
-          .delete(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}${id}/`)
-          .then((res) => {
-            if (res.status === 204) {
-              router.reload();
-            }
-          });
-      });
-    }
-  };
+
   const tag_colors = ["#D8FAD1", "#FAD8D1", "#CFDEFC", "#FCCFF5"];
   return (
     <div className={styles.table_container}>
       <table className={styles.table}>
         <thead className={styles.thead}>
           <tr key="headerRow">
-            <th className={styles.th} onClick={handleDelete} key="delete-icon">
+            <th className={styles.th} key="delete-icon">
               <input
                 className={styles.checkbox}
                 type="checkbox"
                 id="all"
                 checked={clickedCheckboxes.includes("all")}
-                onChange={handleCheck}
+                onChange={(e) => handleCheckboxChange(e, rows)}
               />
             </th>
             {columns.map((column) => (
@@ -122,8 +92,11 @@ export default function DataTable(props: DataTableProps) {
                     className={styles.checkbox}
                     type="checkbox"
                     id={row[0]}
-                    checked={clickedCheckboxes.includes("all")}
-                    onChange={handleCheck}
+                    checked={
+                      clickedCheckboxes.includes("all") ||
+                      clickedCheckboxes.includes(row[0])
+                    }
+                    onChange={(e) => handleCheckboxChange(e, rows)}
                   />
                 </td>
                 {row.map((cell, cellIndex) => (
@@ -144,6 +117,7 @@ export default function DataTable(props: DataTableProps) {
                       <div className={styles.cell_container}>
                         {cell.map((item, index) => (
                           <div
+                            key={`divkey-${index}`}
                             className={styles.cell_type}
                             style={{ backgroundColor: tag_colors[index % 4] }}
                           >

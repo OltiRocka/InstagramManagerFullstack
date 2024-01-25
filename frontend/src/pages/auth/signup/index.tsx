@@ -5,10 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import { signupUser } from "@/stores/auth";
 import { useRouter } from "next/navigation";
-import GoogleIcon from "@/assets/images/GoogleIcon.png";
-import "../../../app/globals.css";
+import "@/app/globals.css";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
 
 export default function Signup() {
   const router = useRouter();

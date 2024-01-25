@@ -10,8 +10,12 @@
   display: block;
   overflow-y: scroll;
   scrollbar-width: thin;
+  table-layout: fixed;
 }
 
+.table thead {
+  width: 100%;
+}
 .table thead th {
   position: sticky;
   top: 0;
@@ -26,6 +30,7 @@
   padding: 0 15px;
   text-align: left;
   padding-bottom: 20px;
+  flex: 1;
 }
 
 .th:first-child {
@@ -142,11 +147,6 @@
   gap: 20px;
 }
 
-.delete {
-  font-size: 16px;
-  color: red;
-  cursor: pointer;
-}
 .pagination {
   display: flex;
   align-items: center;
